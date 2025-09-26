@@ -1,0 +1,2331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposta: Combo Esquenta do Beira</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Container principal */
+        .presentation-container {
+            height: 100vh;
+            overflow-y: auto;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Slides */
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            scroll-snap-align: start;
+            transition: all 0.5s ease;
+        }
+
+        .slide:target {
+            scroll-snap-align: start;
+        }
+
+        .slide-content {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Navigation Dots - Fixed Position */
+        .nav-dots {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 1000;
+            background: rgba(255,255,255,0.9);
+            padding: 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.3);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+            cursor: pointer;
+        }
+
+        /* Destacar dot ativo usando :target */
+        #slide1:target ~ .nav-dots .dot[href="#slide1"],
+        #slide2:target ~ .nav-dots .dot[href="#slide2"],
+        #slide3:target ~ .nav-dots .dot[href="#slide3"],
+        #slide4:target ~ .nav-dots .dot[href="#slide4"],
+        #slide5:target ~ .nav-dots .dot[href="#slide5"],
+        #slide6:target ~ .nav-dots .dot[href="#slide6"],
+        #slide7:target ~ .nav-dots .dot[href="#slide7"],
+        #slide8:target ~ .nav-dots .dot[href="#slide8"],
+        #slide9:target ~ .nav-dots .dot[href="#slide9"] {
+            background: #D4AF37;
+            transform: scale(1.2);
+        }
+
+        /* Mostrar primeiro dot como ativo por padrão */
+        .nav-dots .dot[href="#slide1"] {
+            background: #D4AF37;
+            transform: scale(1.2);
+        }
+
+        /* Navigation Controls - Fixed Position */
+        .nav-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background: #DAA520;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Cover Slide Styles */
+        .cover-slide .slide-content {
+            background: linear-gradient(135deg, #B8860B 0%, #DAA520 50%, #FFD700 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-slide .slide-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='20' cy='20' r='2' fill='rgba(255,255,255,0.1)'/><circle cx='80' cy='40' r='1.5' fill='rgba(255,255,255,0.1)'/><circle cx='40' cy='80' r='1' fill='rgba(255,255,255,0.1)'/></svg>");
+            opacity: 0.3;
+        }
+
+        .cover-icon {
+            font-size: 3rem;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-icon i {
+            margin: 0 8px;
+            animation: bounce 2s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-8px); }
+        }
+
+        .cover-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-subtitle {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #FFF8DC;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-description {
+            font-size: 1rem;
+            margin-bottom: 25px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-highlight {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px 25px;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Content Slides Styles */
+        .slide-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .slide-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #B8860B;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .slide-title i {
+            font-size: 1.3rem;
+            color: #DAA520;
+        }
+
+        .points-grid {
+            display: grid;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .point-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 18px;
+            border-radius: 12px;
+            border-left: 4px solid #DAA520;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: left;
+            transition: transform 0.3s ease;
+        }
+
+        .point-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .point-card i {
+            color: #B8860B;
+            font-size: 1.2rem;
+            margin-right: 12px;
+        }
+
+        .point-card strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        .point-card p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Financial Analysis - ESTRUTURA SUPER REATIVA */
+        .financial-card {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 18px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .financial-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .breakdown-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .breakdown-item.highlight {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255,255,255,0.5);
+            transform: scale(1.02);
+        }
+
+        .breakdown-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .breakdown-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            line-height: 1.2;
+        }
+
+        .financial-footer {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            opacity: 0.95;
+        }
+
+        /* Market Comparison - SUPER VISÍVEL */
+        .market-validation {
+            background: rgba(255, 215, 0, 0.15);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: left;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+        }
+
+        .market-validation h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .market-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(184, 134, 11, 0.1);
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .market-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .market-highlight {
+            background: rgba(40, 167, 69, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: #155724;
+            font-weight: 700;
+            border: 1px solid #28a745;
+        }
+
+        /* Costs Breakdown - COM ESPECIFICAÇÕES DETALHADAS */
+        .costs-breakdown {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .costs-breakdown h4 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .cost-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #FFD700;
+        }
+
+        /* Tooltip para explicações */
+        .cost-tooltip {
+            position: relative;
+            cursor: help;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cost-tooltip:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltip-content {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .tooltip-content::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+        }
+
+        /* Estados de Loading/Placeholder */
+        .placeholder-text {
+            color: rgba(255,255,255,0.6);
+            font-style: italic;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .waiting-simulation {
+            background: rgba(255,255,255,0.05);
+            border: 2px dashed rgba(255,255,255,0.2);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Combo Preview */
+        .combo-preview {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            color: #2c3e50;
+        }
+
+        .combo-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .combo-description {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .highlight-number {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin: 0 2px;
+        }
+
+        /* SIMULADOR iFood STYLE - SUPER RESPONSIVO */
+        .simulator-container {
+            background: #f8f9fa;
+            border-radius: 18px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .simulator-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid #DAA520;
+            padding-bottom: 8px;
+        }
+
+        .items-grid {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .item-card {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        /* Item selecionado */
+        .item-card.selected {
+            border: 3px solid #28a745;
+            background: linear-gradient(135deg, #f0fff4 0%, #e8f5e8 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+        }
+
+        .item-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .kibe { background: linear-gradient(135deg, #8B4513, #A0522D); }
+        .esfiha { background: linear-gradient(135deg, #FF6B35, #F7931E); }
+        .kibeirute { background: linear-gradient(135deg, #6A5ACD, #8A2BE2); }
+        .kiberovo { background: linear-gradient(135deg, #32CD32, #228B22); }
+        .cerveja { background: linear-gradient(135deg, #FFD700, #FFA500); }
+
+        .item-details h4 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 3px;
+            font-size: 0.95rem;
+        }
+
+        .item-price {
+            color: #28a745;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .quantity-controls {
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .item-card.selected .quantity-controls {
+            display: flex;
+        }
+
+        .item-card.selected .add-btn {
+            display: none;
+        }
+
+        .quantity-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid #28a745;
+            background: white;
+            color: #28a745;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            /* 🔥 CRÍTICO PARA iOS SAFARI - Correções aplicadas */
+            -webkit-appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            /* Adicionar onclick vazio para iOS Safari */
+            outline: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .quantity-btn:hover {
+            background: #28a745;
+            color: white;
+        }
+
+        .quantity-btn:disabled {
+            border-color: #6c757d;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .quantity-display {
+            background: #28a745;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .add-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 🔥 CRÍTICO PARA iOS SAFARI - Correções aplicadas */
+            -webkit-appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            /* Adicionar onclick vazio para iOS Safari */
+            outline: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .add-btn:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #20c997, #17a2b8);
+        }
+
+        .add-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Botão Adicionar ao Carrinho - estilo iFood */
+        .add-to-cart {
+            background: linear-gradient(135deg, #ea1d2c, #d1001f);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 12px rgba(234, 29, 44, 0.3);
+            /* 🔥 CRÍTICO PARA iOS SAFARI - Correções aplicadas */
+            -webkit-appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            outline: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .add-to-cart:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(234, 29, 44, 0.4);
+            background: linear-gradient(135deg, #d1001f, #b8001b);
+        }
+
+        .add-to-cart:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Botão Finalizar Pedido - ESTILO iFood */
+        .finalize-order-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin: 20px 0 15px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            /* 🔥 CRÍTICO PARA iOS SAFARI - Correções aplicadas */
+            -webkit-appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            outline: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .finalize-order-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            background: linear-gradient(135deg, #20c997, #17a2b8);
+        }
+
+        .cart-summary {
+            background: rgba(234, 29, 44, 0.1);
+            border: 1px solid #ea1d2c;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cart-items-count {
+            font-weight: 700;
+            color: #ea1d2c;
+            font-size: 1rem;
+        }
+
+        .cart-total {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            margin-top: 4px;
+        }
+
+        /* Seleção de Cervejas */
+        .beer-requirement {
+            background: linear-gradient(135deg, #FFA726, #FF9800);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .beer-requirement h3 {
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .beer-requirement p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Resumo Final com Desconto */
+        .final-summary {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-top: 25px;
+        }
+
+        .summary-section {
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .summary-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .summary-section h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .summary-item:hover {
+            background: rgba(0,0,0,0.02);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        .summary-item.total {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #28a745;
+            border-top: 2px solid #DAA520;
+            padding-top: 8px;
+            margin-top: 12px;
+        }
+
+        .summary-item.discount {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .summary-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .empty-order {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .limit-warning {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            color: #2d3436;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Botões diversos - CRÍTICO PARA iOS */
+        .action-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-right: 8px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            /* 🔥 CRÍTICO PARA iOS SAFARI - Correções aplicadas */
+            -webkit-appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            outline: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .action-btn.danger { background: #dc3545; }
+        .action-btn.warning { background: #DAA520; }
+
+        /* CTA Section */
+        .cta-slide .slide-content {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 12px 25px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+        }
+
+        .btn-approve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 184, 148, 0.3);
+        }
+
+        .btn-discuss {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-discuss:hover {
+            background: white;
+            color: #6c5ce7;
+        }
+
+        /* RESPONSIVIDADE COMPLETA - Mobile First */
+        @media (max-width: 480px) {
+            .slide { padding: 10px; }
+            .slide-content { padding: 20px; border-radius: 15px; }
+            .cover-title { font-size: 1.6rem; }
+            .cover-subtitle { font-size: 1.3rem; }
+            .slide-title { font-size: 1.3rem; flex-direction: column; gap: 8px; }
+            .financial-breakdown { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .breakdown-item { padding: 10px; }
+            .breakdown-value { font-size: 1.1rem; }
+            .breakdown-label { font-size: 0.7rem; }
+            .cta-buttons { flex-direction: column; align-items: center; }
+            .nav-dots { right: 5px; top: 5px; padding: 8px; }
+            .nav-controls { bottom: 15px; gap: 10px; }
+            .nav-btn { width: 40px; height: 40px; font-size: 1rem; }
+            .simulator-container { padding: 15px; border-radius: 12px; }
+            .simulator-title { font-size: 1.1rem; }
+            .item-info { gap: 10px; }
+            .item-icon { width: 35px; height: 35px; font-size: 1rem; }
+            .item-details h4 { font-size: 0.85rem; }
+            .item-price { font-size: 0.8rem; }
+            .add-to-cart { padding: 10px 20px; font-size: 0.9rem; }
+            .finalize-order-btn { padding: 12px 20px; font-size: 1rem; }
+            .point-card { padding: 15px; }
+            .point-card strong { font-size: 0.9rem; }
+            .point-card p { font-size: 0.85rem; }
+        }
+
+        /* Tablets */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .slide-content { padding: 25px; max-width: 90%; }
+            .financial-breakdown { grid-template-columns: repeat(3, 1fr); }
+            .cover-title { font-size: 1.8rem; }
+            .cover-subtitle { font-size: 1.4rem; }
+        }
+
+        /* Desktop */
+        @media (min-width: 769px) {
+            .slide-content { padding: 40px; }
+            .financial-breakdown { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+            .item-info { gap: 15px; }
+            .item-icon { width: 45px; height: 45px; font-size: 1.3rem; }
+        }
+
+        /* Scroll hint */
+        .scroll-hint {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.8);
+            font-size: 0.8rem;
+            text-align: center;
+            z-index: 999;
+            animation: fadeInOut 3s ease-in-out infinite;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .slide:target ~ .scroll-hint {
+            display: none;
+        }
+
+        /* ANÁLISE FINANCEIRA SUPER DINÂMICA */
+        .dynamic-analysis {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dynamic-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .dynamic-content {
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .highlight-value {
+            color: #FFD700;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Slide 1: Capa -->
+    <section class="slide cover-slide" id="slide1">
+        <div class="slide-content">
+            <div class="cover-icon">
+                <i class="fas fa-utensils"></i>
+                <i class="fas fa-futbol"></i>
+            </div>
+            <h1 class="cover-title">Proposta de Lançamento</h1>
+            <h2 class="cover-subtitle">Combo Esquenta do Beira</h2>
+            <div class="cover-description">
+                <p>Uma estratégia inovadora para unir tradição árabe e paixão pelo futebol</p>
+            </div>
+            <div class="cover-highlight">
+                <i class="fas fa-star"></i>
+                <span>Experiência única para as quartas-feiras de futebol</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 2: Por que criar -->
+    <section class="slide" id="slide2">
+        <div class="slide-content">
+            <div class="slide-header">
+                <h2 class="slide-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Por Que Criar Este Combo?
+                </h2>
+            </div>
+            <div class="points-grid">
+                <div class="point-card">
+                    <i class="fas fa-calendar-week"></i>
+                    <strong>Tradição das Quartas de Futebol</strong>
+                    <p>A noite de quarta-feira com futebol é uma ocasião tradicional de confraternização e grande movimento em restaurantes e bares de todo o Brasil</p>
+                </div>
+                <div class="point-card">
+                    <i class="fas fa-chart-line"></i>
+                    <strong>Tendência Consolidada</strong>
+                    <p>O formato combo é tendência consolidada em plataformas como iFood, agregando praticidade, economia e maior valor percebido para o consumidor</p>
+                </div>
+                <div class="point-card">
+                    <i class="fas fa-trophy"></i>
+                    <strong>Práticas Vencedoras</strong>
+                    <p>Grandes casas do segmento árabe já utilizam combos para promover petiscos e bebidas, tornando-se líderes de venda nesses períodos</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 3: Estratégia -->
+    <section class="slide" id="slide3">
+        <div class="slide-content">
+            <div class="slide-header">
+                <h2 class="slide-title">
+                    <i class="fas fa-chess"></i>
+                    Estratégia Comercial
+                </h2>
+            </div>
+            <div class="combo-preview">
+                <div class="combo-title">Combo Esquenta do Beira</div>
+                <div class="combo-description">
+                    "Futebol de quarta é com o Beira, venha para o esquenta mais saboroso da cidade! Monte seu combo perfeito escolhendo até <span class="highlight-number">6 opções</span> entre nossos irresistíveis kibes fritos e grelhados, kibeirute, kiberovo, kiberute grelhado e esfirras recheadas (carne, frango, calabresa, ricota). Tudo fresquinho, crocante e ideal para dividir com a torcida!"
+                </div>
+            </div>
+            <div class="points-grid">
+                <div class="point-card">
+                    <i class="fas fa-palette"></i>
+                    <strong>Diversidade e Personalização</strong>
+                    <p>O combo permite ao cliente montar sua própria seleção entre 9 opções de kibes e esfirras, destacando frescor e variedade</p>
+                </div>
+                <div class="point-card">
+                    <i class="fas fa-futbol"></i>
+                    <strong>Apelo Sazonal</strong>
+                    <p>Promoção voltada ao "esquenta" das quartas-feiras de futebol, criando associação direta com o momento mais desejado</p>
+                </div>
+                <div class="point-card">
+                    <i class="fas fa-medal"></i>
+                    <strong>Posicionamento Competitivo</strong>
+                    <p>União única de variedade, identidade árabe e vínculo explícito com futebol, colocando o Beira como protagonista</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 4: SIMULADOR - Escolha dos Itens -->
+    <section class="slide" id="slide4">
+        <div class="slide-content">
+            <div class="slide-header">
+                <h2 class="slide-title">
+                    <i class="fas fa-mobile-alt"></i>
+                    Simulador: Monte Seu Combo
+                </h2>
+            </div>
+            
+            <div class="simulator-container">
+                <div class="simulator-title">📱 Escolha até 6 itens para seu combo</div>
+                
+                <div id="limit-warning" class="limit-warning" style="display: none;">
+                    ⚠️ Limite de 6 itens atingido! Remova um item para adicionar outro.
+                </div>
+
+                <div id="cart-summary" class="cart-summary" style="display: none;">
+                    <div class="cart-items-count">0 itens selecionados</div>
+                    <div class="cart-total">Total: R$ 0,00</div>
+                </div>
+
+                <div class="items-grid">
+                    <!-- KIBES -->
+                    <div class="item-card" data-item="Kibe frito" data-price="12.60" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon kibe">🔥</div>
+                            <div class="item-details">
+                                <h4>Kibe frito</h4>
+                                <div class="item-price">R$ 12,60</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item-card" data-item="Kiberovo" data-price="18.50" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon kiberovo">🥚</div>
+                            <div class="item-details">
+                                <h4>Kiberovo</h4>
+                                <div class="item-price">R$ 18,50</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item-card" data-item="Kibe grelhado" data-price="16.50" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon kibe">🥙</div>
+                            <div class="item-details">
+                                <h4>Kibe grelhado</h4>
+                                <div class="item-price">R$ 16,50</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item-card" data-item="Kiberute" data-price="15.90" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon kibeirute">🌯</div>
+                            <div class="item-details">
+                                <h4>Kiberute</h4>
+                                <div class="item-price">R$ 15,90</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item-card" data-item="Kiberute grelhado" data-price="15.90" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon kibeirute">🌯</div>
+                            <div class="item-details">
+                                <h4>Kiberute grelhado</h4>
+                                <div class="item-price">R$ 15,90</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ESFIRRAS -->
+                    <div class="item-card" data-item="Esfirra de Carne" data-price="12.90" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon esfiha">🥩</div>
+                            <div class="item-details">
+                                <h4>Esfirra de Carne</h4>
+                                <div class="item-price">R$ 12,90</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item-card" data-item="Esfirra de Frango" data-price="12.90" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon esfiha">🐔</div>
+                            <div class="item-details">
+                                <h4>Esfirra de Frango</h4>
+                                <div class="item-price">R$ 12,90</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item-card" data-item="Esfirra de Calabresa" data-price="12.90" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon esfiha">🌶️</div>
+                            <div class="item-details">
+                                <h4>Esfirra de Calabresa</h4>
+                                <div class="item-price">R$ 12,90</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item-card" data-item="Esfirra de Ricota" data-price="12.90" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon esfiha">🧀</div>
+                            <div class="item-details">
+                                <h4>Esfirra de Ricota</h4>
+                                <div class="item-price">R$ 12,90</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="add-to-cart-btn" class="add-to-cart" disabled onclick="void(0)">
+                    Escolher Cervejas - R$ 0,00
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 5: Seleção de Cervejas -->
+    <section class="slide" id="slide5">
+        <div class="slide-content">
+            <div class="slide-header">
+                <h2 class="slide-title">
+                    <i class="fas fa-beer"></i>
+                    Escolha suas Cervejas
+                </h2>
+            </div>
+            
+            <div class="simulator-container">
+                <div class="beer-requirement">
+                    <h3>Cervejas Obrigatórias no Combo</h3>
+                    <p>Escolha pelo menos <strong>3 cervejas</strong> para completar seu combo</p>
+                </div>
+
+                <div id="beer-cart-summary" class="cart-summary" style="display: none;">
+                    <div class="cart-items-count">0 cervejas selecionadas</div>
+                    <div class="cart-total">Total: R$ 0,00</div>
+                </div>
+
+                <div class="items-grid">
+                    <div class="item-card beer-item" data-item="Brahma 350ml" data-price="9.90" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon cerveja">🍺</div>
+                            <div class="item-details">
+                                <h4>Brahma 350ml</h4>
+                                <div class="item-price">R$ 9,90</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item-card beer-item" data-item="Skol 350ml" data-price="9.90" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon cerveja">🍺</div>
+                            <div class="item-details">
+                                <h4>Skol 350ml</h4>
+                                <div class="item-price">R$ 9,90</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item-card beer-item" data-item="Antarctica 350ml" data-price="10.90" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon cerveja">🍺</div>
+                            <div class="item-details">
+                                <h4>Antarctica 350ml</h4>
+                                <div class="item-price">R$ 10,90</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item-card beer-item" data-item="Heineken 350ml" data-price="12.90" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon cerveja">🍺</div>
+                            <div class="item-details">
+                                <h4>Heineken 350ml</h4>
+                                <div class="item-price">R$ 12,90</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item-card beer-item" data-item="Cerveja Corona Extra 330ml" data-price="12.90" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon cerveja">🍺</div>
+                            <div class="item-details">
+                                <h4>Corona Extra 330ml</h4>
+                                <div class="item-price">R$ 12,90</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item-card beer-item" data-item="Corona Zero 330ml" data-price="12.90" onclick="void(0)">
+                        <div class="item-info">
+                            <div class="item-icon cerveja">🍺</div>
+                            <div class="item-details">
+                                <h4>Corona Zero 330ml</h4>
+                                <div class="item-price">R$ 12,90</div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-btn" data-action="add" onclick="void(0)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" data-action="decrease" onclick="void(0)">-</button>
+                                <div class="quantity-display">0</div>
+                                <button class="quantity-btn" data-action="increase" onclick="void(0)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="complete-order-btn" class="finalize-order-btn" disabled onclick="void(0)">
+                    <i class="fas fa-shopping-cart"></i>
+                    Escolha pelo menos 3 cervejas
+                </button>
+
+                <div style="margin-top: 10px; text-align: center;">
+                    <a href="#slide4" class="action-btn warning">← Voltar aos Petiscos</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 6: Resumo Final -->
+    <section class="slide" id="slide6">
+        <div class="slide-content">
+            <div class="slide-header">
+                <h2 class="slide-title">
+                    <i class="fas fa-receipt"></i>
+                    Resumo do Seu Combo
+                </h2>
+            </div>
+            
+            <div class="simulator-container">
+                <div class="final-summary">
+                    <div class="summary-title">
+                        <i class="fas fa-utensils"></i>
+                        Seu Combo Personalizado
+                    </div>
+
+                    <div class="summary-section">
+                        <h4>🍴 Petiscos Selecionados</h4>
+                        <div id="final-food-items">
+                            <div class="empty-order">Nenhum item selecionado</div>
+                        </div>
+                    </div>
+
+                    <div class="summary-section">
+                        <h4>🍺 Cervejas Selecionadas</h4>
+                        <div id="final-beer-items">
+                            <div class="empty-order">Nenhuma cerveja selecionada</div>
+                        </div>
+                    </div>
+
+                    <div class="summary-section">
+                        <div class="summary-item">
+                            <span>Subtotal Petiscos:</span>
+                            <span id="food-subtotal">R$ 0,00</span>
+                        </div>
+                        <div class="summary-item discount">
+                            <span>Desconto (10%):</span>
+                            <span id="food-discount">- R$ 0,00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Total Petiscos:</span>
+                            <span id="food-total">R$ 0,00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Total Cervejas:</span>
+                            <span id="beer-total">R$ 0,00</span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>TOTAL DO COMBO:</span>
+                            <span id="grand-total">R$ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTÃO FINALIZAR PEDIDO - ESTILO iFood -->
+                <button class="finalize-order-btn" id="go-to-analysis-btn" onclick="void(0)">
+                    <i class="fas fa-check-circle"></i>
+                    Finalizar Pedido
+                </button>
+
+                <div style="margin-top: 10px; text-align: center;">
+                    <button id="clear-order-btn" class="action-btn danger" onclick="void(0)">🗑️ Limpar</button>
+                    <a href="#slide5" class="action-btn">← Cervejas</a>
+                    <a href="#slide4" class="action-btn warning">← Petiscos</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 7: Análise Financeira COM ESPECIFICAÇÕES DETALHADAS -->
+    <section class="slide" id="slide7">
+        <div class="slide-content">
+            <div class="slide-header">
+                <h2 class="slide-title">
+                    <i class="fas fa-calculator"></i>
+                    Análise Financeira do Combo
+                </h2>
+            </div>
+            
+            <div class="financial-card">
+                <h3 style="margin-bottom: 15px; font-size: 1.3rem;">💰 Estrutura de Preços</h3>
+                
+                <!-- ESTRUTURA SUPER REATIVA -->
+                <div id="price-structure-static" class="financial-breakdown">
+                    <div class="breakdown-item">
+                        <div class="breakdown-value">R$ 12,60 - R$ 18,50</div>
+                        <div class="breakdown-label">Variação de preços (petiscos)</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-value">R$ 9,90 - R$ 12,90</div>
+                        <div class="breakdown-label">Variação de preços (cervejas)</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-value">R$ 67,50</div>
+                        <div class="breakdown-label">Menor pedido possível</div>
+                    </div>
+                    <div class="breakdown-item highlight">
+                        <div class="breakdown-value" id="simulated-total">Use o simulador!</div>
+                        <div class="breakdown-label"><strong>VALOR SIMULADO</strong></div>
+                    </div>
+                </div>
+
+                <!-- VALIDAÇÃO DE MERCADO - SUPER VISÍVEL -->
+                <div class="market-validation">
+                    <h4><i class="fas fa-chart-bar"></i> Comparativo de Mercado Brasileiro</h4>
+                    <div class="market-item">
+                        <span>Margem líquida típica (delivery):</span>
+                        <span>10-15%</span>
+                    </div>
+                    <div class="market-item">
+                        <span>Margem em promoções (aceitável):</span>
+                        <span>8-12%</span>
+                    </div>
+                    <div class="market-item">
+                        <span>Taxa iFood confirmada (mercado):</span>
+                        <span>21,5%</span>
+                    </div>
+                    <div class="market-item">
+                        <span>Sua margem promocional:</span>
+                        <span class="market-highlight">43,5%</span>
+                    </div>
+                </div>
+
+                <!-- CUSTOS OPERACIONAIS COM ESPECIFICAÇÕES DETALHADAS -->
+                <div id="costs-breakdown" class="costs-breakdown">
+                    <h4>💼 Custos Operacionais Reais</h4>
+                    <div id="costs-content">
+                        <div class="cost-item placeholder-text">
+                            <span>Use o simulador para ver a análise detalhada dos custos!</span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="financial-footer">
+                    <i class="fas fa-trophy"></i> <strong>EXCELENTE:</strong> Sua margem promocional está muito acima da média de mercado e garante lucratividade sustentável!
+                </div>
+
+                <!-- SEÇÃO SUPER REATIVA -->
+                <div id="dynamic-analysis" class="dynamic-analysis" style="display: none;">
+                    <div class="dynamic-title">📊 Análise do Seu Combo Personalizado</div>
+                    <div class="dynamic-content" id="dynamic-content">
+                        <!-- Conteúdo será preenchido dinamicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 8: Razões para implementar -->
+    <section class="slide" id="slide8">
+        <div class="slide-content">
+            <div class="slide-header">
+                <h2 class="slide-title">
+                    <i class="fas fa-rocket"></i>
+                    Razões Para Implementação
+                </h2>
+            </div>
+            <div class="points-grid">
+                <div class="point-card">
+                    <i class="fas fa-chart-bar"></i>
+                    <strong>Aumento do Ticket Médio</strong>
+                    <p>Combos aumentam significativamente o valor médio por pedido comparado a itens avulsos, com valor mínimo possível de R$ 67,50</p>
+                </div>
+                <div class="point-card">
+                    <i class="fas fa-eye"></i>
+                    <strong>Ganho de Visibilidade</strong>
+                    <p>Combos são priorizados pelos algoritmos do iFood, tornando-se mais visíveis e aumentando o volume de pedidos</p>
+                </div>
+                <div class="point-card">
+                    <i class="fas fa-heart"></i>
+                    <strong>Diferenciação de Marca</strong>
+                    <p>Fortalece o nome "Beira" na rotina cultural do público ("Futebol de quarta é com o Beira"), criando vínculo emocional</p>
+                </div>
+                <div class="point-card">
+                    <i class="fas fa-users"></i>
+                    <strong>Experiência Memorável</strong>
+                    <p>Petiscos artesanais + bebidas + escolha personalizada = evento social que aumenta chances de recompra e recomendação</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 9: Conclusão e CTA -->
+    <section class="slide cta-slide" id="slide9">
+        <div class="slide-content">
+            <div class="cover-icon">
+                <i class="fas fa-handshake"></i>
+            </div>
+            <h2 style="font-size: 1.8rem; margin-bottom: 20px;">Vamos Transformar as Quartas de Futebol!</h2>
+            <p style="font-size: 1rem; margin-bottom: 15px; opacity: 0.95;">
+                Investir no <strong>Combo Esquenta do Beira</strong> é apostar em uma solução inteligente, alinhada às tendências do mercado e ao desejo do público por experiências diferenciadas.
+            </p>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; margin: 20px 0; backdrop-filter: blur(10px);">
+                <h3 style="margin-bottom: 12px; font-size: 1.1rem;">
+                    <i class="fas fa-bullseye"></i> Resultado Esperado
+                </h3>
+                <p style="font-size: 1rem;">
+                    Valor mínimo de <strong>R$ 67,50</strong> por pedido<br>
+                    Margem líquida de <strong>43,5%</strong> (3x acima da média)<br>
+                    Maior visibilidade no iFood<br>
+                    Fortalecimento da marca nas quartas de futebol
+                </p>
+            </div>
+            
+            <div class="cta-buttons">
+                <a href="https://wa.me/5561999996141?text=PROPOSTA%20APROVADA%20-%20Combo%20Esquenta%20do%20Beira%0A%0AData%3A%2018%2F09%2F2025%0ACombo%3A%20Esquenta%20do%20Beira%0AValor%20Minimo%3A%20R%24%2067%2C50%0AEstrutura%3A%206%20itens%20%2B%203%20cervejas%20minimas%0AMargem%20Liquida%3A%2043%2C5%25%0A%0AProposta%20aprovada%21%0A%0AProximos%20passos%3A%0A-%20Configurar%20no%20iFood%0A-%20Criar%20imagens%20promocionais%0A-%20Definir%20data%20de%20lancamento" class="cta-btn btn-approve" target="_blank">
+                    <i class="fas fa-thumbs-up"></i> Aprovar Combo
+                </a>
+                <a href="https://wa.me/5561999996141?text=Vamos%20conversar%20sobre%20o%20Combo%20Esquenta%20do%20Beira%21%0A%0AGostaria%20de%20discutir%20os%20detalhes%20da%20proposta%3A%0A-%20Ajustar%20precos%20ou%20quantidades%0A-%20Modificar%20opcoes%20do%20combo%0A-%20Estrategias%20de%20marketing%0A-%20Planejar%20o%20lancamento%0A%0AQuando%20podemos%20conversar%3F" class="cta-btn btn-discuss" target="_blank">
+                    <i class="fas fa-comments"></i> Vamos Conversar
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+        <a href="#slide1" id="prev-btn" class="nav-btn">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <a href="#slide2" id="next-btn" class="nav-btn">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+
+    <!-- Navigation Dots -->
+    <div class="nav-dots">
+        <a href="#slide1" class="dot"></a>
+        <a href="#slide2" class="dot"></a>
+        <a href="#slide3" class="dot"></a>
+        <a href="#slide4" class="dot"></a>
+        <a href="#slide5" class="dot"></a>
+        <a href="#slide6" class="dot"></a>
+        <a href="#slide7" class="dot"></a>
+        <a href="#slide8" class="dot"></a>
+        <a href="#slide9" class="dot"></a>
+    </div>
+
+    <!-- Scroll Hint -->
+    <div class="scroll-hint">
+        <i class="fas fa-mouse"></i><br>Role para navegar
+    </div>
+
+    <!-- Script COM CORREÇÕES ESPECÍFICAS PARA iOS/SAFARI -->
+    <script>
+        // Navegação sequencial
+        const slides = ['slide1', 'slide2', 'slide3', 'slide4', 'slide5', 'slide6', 'slide7', 'slide8', 'slide9'];
+        let currentSlideIndex = 0;
+
+        // Controle do simulador
+        let selectedItems = {};
+        let selectedBeers = {};
+        let totalItems = 0;
+        let totalBeers = 0;
+        const MAX_ITEMS = 6;
+        const MIN_BEERS = 3;
+
+        // 🔥 CORREÇÃO CRÍTICA PARA iOS - Event Listeners Únicos e Simplificados
+        function setupEventListeners() {
+            console.log('🍎 Configurando event listeners para iOS Safari...');
+            
+            // BOTÕES DOS PETISCOS - APENAS CLICK, SEM TOUCHEND
+            const itemCards = document.querySelectorAll('.item-card:not(.beer-item)');
+            itemCards.forEach(card => {
+                const addBtn = card.querySelector('[data-action="add"]');
+                const increaseBtn = card.querySelector('[data-action="increase"]');
+                const decreaseBtn = card.querySelector('[data-action="decrease"]');
+                
+                // USAR APENAS CLICK - MAIS COMPATÍVEL COM iOS
+                if (addBtn) {
+                    addBtn.addEventListener('click', handleFoodAction);
+                }
+                if (increaseBtn) {
+                    increaseBtn.addEventListener('click', handleFoodAction);
+                }
+                if (decreaseBtn) {
+                    decreaseBtn.addEventListener('click', handleFoodAction);
+                }
+            });
+
+            // BOTÕES DAS CERVEJAS - APENAS CLICK, SEM TOUCHEND
+            const beerCards = document.querySelectorAll('.beer-item');
+            beerCards.forEach(card => {
+                const addBtn = card.querySelector('[data-action="add"]');
+                const increaseBtn = card.querySelector('[data-action="increase"]');
+                const decreaseBtn = card.querySelector('[data-action="decrease"]');
+                
+                // USAR APENAS CLICK - MAIS COMPATÍVEL COM iOS
+                if (addBtn) {
+                    addBtn.addEventListener('click', handleBeerAction);
+                }
+                if (increaseBtn) {
+                    increaseBtn.addEventListener('click', handleBeerAction);
+                }
+                if (decreaseBtn) {
+                    decreaseBtn.addEventListener('click', handleBeerAction);
+                }
+            });
+
+            // BOTÕES DE NAVEGAÇÃO - APENAS CLICK, SEM TOUCHEND
+            const cartBtn = document.getElementById('add-to-cart-btn');
+            if (cartBtn) {
+                cartBtn.addEventListener('click', goToBeerSelection);
+            }
+
+            const completeBtn = document.getElementById('complete-order-btn');
+            if (completeBtn) {
+                completeBtn.addEventListener('click', goToFinalSummary);
+            }
+
+            const analysisBtn = document.getElementById('go-to-analysis-btn');
+            if (analysisBtn) {
+                analysisBtn.addEventListener('click', goToFinancialAnalysis);
+            }
+
+            const clearBtn = document.getElementById('clear-order-btn');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', clearOrder);
+            }
+
+            console.log('✅ Event listeners configurados com sucesso!');
+        }
+
+        // 🔥 CORREÇÃO CRÍTICA - NAVEGAÇÃO SIMPLIFICADA SEM preventDefault()
+        function goToBeerSelection() {
+            window.location.hash = '#slide5';
+        }
+
+        function goToFinalSummary() {
+            window.location.hash = '#slide6';
+        }
+
+        function goToFinancialAnalysis() {
+            window.location.hash = '#slide7';
+        }
+
+        function clearOrder() {
+            selectedItems = {};
+            selectedBeers = {};
+            totalItems = 0;
+            totalBeers = 0;
+
+            // Remove visual de seleção de todos os cards
+            document.querySelectorAll('.item-card').forEach(card => {
+                card.classList.remove('selected');
+                const quantityDisplay = card.querySelector('.quantity-display');
+                if (quantityDisplay) quantityDisplay.textContent = '0';
+            });
+
+            updateCartSummary();
+            updateBeerCartSummary();
+            updateFinalSummary();
+            updateAllAnalysis();
+        }
+
+        // Handler para ações dos petiscos
+        function handleFoodAction(event) {
+            // 🔥 CORREÇÃO: Não usar preventDefault() no iOS
+            const button = event.target;
+            const action = button.dataset.action;
+            const card = button.closest('.item-card');
+            const itemName = card.dataset.item;
+            const itemPrice = parseFloat(card.dataset.price);
+
+            console.log('Ação:', action, 'para', itemName);
+
+            switch(action) {
+                case 'add':
+                    addItem(card, itemName, itemPrice);
+                    break;
+                case 'increase':
+                    increaseItem(card, itemName);
+                    break;
+                case 'decrease':
+                    decreaseItem(card, itemName);
+                    break;
+            }
+
+            updateCartSummary();
+            updateFinalSummary();
+            updateAllAnalysis();
+        }
+
+        // Handler para ações das cervejas
+        function handleBeerAction(event) {
+            // 🔥 CORREÇÃO: Não usar preventDefault() no iOS
+            const button = event.target;
+            const action = button.dataset.action;
+            const card = button.closest('.item-card');
+            const itemName = card.dataset.item;
+            const itemPrice = parseFloat(card.dataset.price);
+
+            console.log('Ação:', action, 'para', itemName);
+
+            switch(action) {
+                case 'add':
+                    addBeer(card, itemName, itemPrice);
+                    break;
+                case 'increase':
+                    increaseBeer(card, itemName);
+                    break;
+                case 'decrease':
+                    decreaseBeer(card, itemName);
+                    break;
+            }
+
+            updateBeerCartSummary();
+            updateFinalSummary();
+            updateAllAnalysis();
+        }
+
+        // Funções para gerenciar petiscos
+        function addItem(card, itemName, itemPrice) {
+            if (totalItems >= MAX_ITEMS) {
+                showLimitWarning();
+                return;
+            }
+
+            if (!selectedItems[itemName]) {
+                selectedItems[itemName] = { quantity: 0, price: itemPrice };
+            }
+
+            selectedItems[itemName].quantity = 1;
+            totalItems = Object.values(selectedItems).reduce((sum, item) => sum + item.quantity, 0);
+
+            card.classList.add('selected');
+            const quantityDisplay = card.querySelector('.quantity-display');
+            quantityDisplay.textContent = '1';
+        }
+
+        function increaseItem(card, itemName) {
+            if (totalItems >= MAX_ITEMS) {
+                showLimitWarning();
+                return;
+            }
+
+            if (selectedItems[itemName]) {
+                selectedItems[itemName].quantity++;
+                totalItems++;
+
+                const quantityDisplay = card.querySelector('.quantity-display');
+                quantityDisplay.textContent = selectedItems[itemName].quantity;
+            }
+        }
+
+        function decreaseItem(card, itemName) {
+            if (selectedItems[itemName] && selectedItems[itemName].quantity > 0) {
+                selectedItems[itemName].quantity--;
+                totalItems--;
+
+                const quantityDisplay = card.querySelector('.quantity-display');
+                quantityDisplay.textContent = selectedItems[itemName].quantity;
+
+                if (selectedItems[itemName].quantity === 0) {
+                    card.classList.remove('selected');
+                    delete selectedItems[itemName];
+                }
+            }
+        }
+
+        // Funções para gerenciar cervejas
+        function addBeer(card, itemName, itemPrice) {
+            if (!selectedBeers[itemName]) {
+                selectedBeers[itemName] = { quantity: 0, price: itemPrice };
+            }
+
+            selectedBeers[itemName].quantity = 1;
+            totalBeers = Object.values(selectedBeers).reduce((sum, item) => sum + item.quantity, 0);
+
+            card.classList.add('selected');
+            const quantityDisplay = card.querySelector('.quantity-display');
+            quantityDisplay.textContent = '1';
+        }
+
+        function increaseBeer(card, itemName) {
+            if (selectedBeers[itemName]) {
+                selectedBeers[itemName].quantity++;
+                totalBeers++;
+
+                const quantityDisplay = card.querySelector('.quantity-display');
+                quantityDisplay.textContent = selectedBeers[itemName].quantity;
+            }
+        }
+
+        function decreaseBeer(card, itemName) {
+            if (selectedBeers[itemName] && selectedBeers[itemName].quantity > 0) {
+                selectedBeers[itemName].quantity--;
+                totalBeers--;
+
+                const quantityDisplay = card.querySelector('.quantity-display');
+                quantityDisplay.textContent = selectedBeers[itemName].quantity;
+
+                if (selectedBeers[itemName].quantity === 0) {
+                    card.classList.remove('selected');
+                    delete selectedBeers[itemName];
+                }
+            }
+        }
+
+        // Navegação entre slides
+        function detectSlideChange() {
+            const hash = window.location.hash || '#slide1';
+            currentSlideIndex = slides.indexOf(hash.substring(1));
+            if (currentSlideIndex === -1) currentSlideIndex = 0;
+            updateNavigation();
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            if (currentSlideIndex > 0) {
+                prevBtn.href = '#' + slides[currentSlideIndex - 1];
+            } else {
+                prevBtn.href = '#slide1';
+            }
+            
+            if (currentSlideIndex < slides.length - 1) {
+                nextBtn.href = '#' + slides[currentSlideIndex + 1];
+            } else {
+                nextBtn.href = '#slide9';
+            }
+        }
+
+        function updateCartSummary() {
+            const cartSummary = document.getElementById('cart-summary');
+            const cartButton = document.getElementById('add-to-cart-btn');
+            
+            let total = 0;
+            Object.values(selectedItems).forEach(item => {
+                if (item.quantity > 0) {
+                    total += (item.quantity * item.price);
+                }
+            });
+            
+            // Aplica desconto de 10%
+            const discountedTotal = total * 0.9;
+            
+            if (totalItems > 0) {
+                cartSummary.style.display = 'block';
+                cartSummary.querySelector('.cart-items-count').textContent = `${totalItems} itens selecionados`;
+                cartSummary.querySelector('.cart-total').textContent = `Total: R$ ${discountedTotal.toFixed(2).replace('.', ',')}`;
+                
+                cartButton.disabled = false;
+                cartButton.textContent = `Escolher Cervejas - R$ ${discountedTotal.toFixed(2).replace('.', ',')}`;
+            } else {
+                cartSummary.style.display = 'none';
+                cartButton.disabled = true;
+                cartButton.textContent = 'Escolher Cervejas - R$ 0,00';
+            }
+        }
+
+        function updateBeerCartSummary() {
+            const cartSummary = document.getElementById('beer-cart-summary');
+            const cartButton = document.getElementById('complete-order-btn');
+            
+            let total = 0;
+            Object.values(selectedBeers).forEach(item => {
+                if (item.quantity > 0) {
+                    total += (item.quantity * item.price);
+                }
+            });
+            
+            if (totalBeers > 0) {
+                cartSummary.style.display = 'block';
+                cartSummary.querySelector('.cart-items-count').textContent = `${totalBeers} cervejas selecionadas`;
+                cartSummary.querySelector('.cart-total').textContent = `Total Cervejas: R$ ${total.toFixed(2).replace('.', ',')}`;
+                
+                if (totalBeers >= MIN_BEERS) {
+                    cartButton.disabled = false;
+                    cartButton.textContent = `Finalizar Pedido - R$ ${(getFoodTotal() + total).toFixed(2).replace('.', ',')}`;
+                } else {
+                    cartButton.disabled = true;
+                    cartButton.textContent = `Escolha pelo menos ${MIN_BEERS} cervejas`;
+                }
+            } else {
+                cartSummary.style.display = 'none';
+                cartButton.disabled = true;
+                cartButton.textContent = `Escolha pelo menos ${MIN_BEERS} cervejas`;
+            }
+        }
+
+        function getFoodTotal() {
+            let total = 0;
+            Object.values(selectedItems).forEach(item => {
+                if (item.quantity > 0) {
+                    total += (item.quantity * item.price);
+                }
+            });
+            // Aplica desconto de 10%
+            return total * 0.9;
+        }
+
+        function getBeerTotal() {
+            let total = 0;
+            Object.values(selectedBeers).forEach(item => {
+                if (item.quantity > 0) {
+                    total += (item.quantity * item.price);
+                }
+            });
+            return total;
+        }
+
+        function updateFinalSummary() {
+            // Atualizar petiscos
+            const foodContainer = document.getElementById('final-food-items');
+            let foodHtml = '';
+            let foodSubtotal = 0;
+
+            Object.entries(selectedItems).forEach(([name, item]) => {
+                if (item.quantity > 0) {
+                    const subtotal = item.quantity * item.price;
+                    foodSubtotal += subtotal;
+                    foodHtml += `
+                        <div class="summary-item">
+                            <span>${name} (${item.quantity}x)</span>
+                            <span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                    `;
+                }
+            });
+
+            if (!foodHtml) {
+                foodHtml = '<div class="empty-order">Nenhum item selecionado</div>';
+            }
+            foodContainer.innerHTML = foodHtml;
+
+            // Atualizar cervejas
+            const beerContainer = document.getElementById('final-beer-items');
+            let beerHtml = '';
+            let beerSubtotal = 0;
+
+            Object.entries(selectedBeers).forEach(([name, item]) => {
+                if (item.quantity > 0) {
+                    const subtotal = item.quantity * item.price;
+                    beerSubtotal += subtotal;
+                    beerHtml += `
+                        <div class="summary-item">
+                            <span>${name} (${item.quantity}x)</span>
+                            <span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                    `;
+                }
+            });
+
+            if (!beerHtml) {
+                beerHtml = '<div class="empty-order">Nenhuma cerveja selecionada</div>';
+            }
+            beerContainer.innerHTML = beerHtml;
+
+            // Calcular totais
+            const discount = foodSubtotal * 0.1;
+            const foodTotal = foodSubtotal - discount;
+            const grandTotal = foodTotal + beerSubtotal;
+
+            // Atualizar valores
+            document.getElementById('food-subtotal').textContent = `R$ ${foodSubtotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('food-discount').textContent = `- R$ ${discount.toFixed(2).replace('.', ',')}`;
+            document.getElementById('food-total').textContent = `R$ ${foodTotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('beer-total').textContent = `R$ ${beerSubtotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('grand-total').textContent = `R$ ${grandTotal.toFixed(2).replace('.', ',')}`;
+        }
+
+        // Atualizar tudo quando o usuário interage
+        function updateAllAnalysis() {
+            updateDynamicAnalysis();
+            updateCostAnalysis();
+            updateSimulatedTotal();
+        }
+
+        // Atualizar valor simulado REATIVO
+        function updateSimulatedTotal() {
+            const foodTotal = getFoodTotal();
+            const beerTotal = getBeerTotal();
+            const grandTotal = foodTotal + beerTotal;
+            
+            const simulatedElement = document.getElementById('simulated-total');
+            const breakdownItem = simulatedElement.closest('.breakdown-item');
+            
+            if (grandTotal > 0) {
+                simulatedElement.textContent = `R$ ${grandTotal.toFixed(2).replace('.', ',')}`;
+                breakdownItem.classList.add('highlight');
+            } else {
+                simulatedElement.textContent = 'Use o simulador!';
+                breakdownItem.classList.remove('highlight');
+            }
+        }
+
+        // Análise de Custos COM ESPECIFICAÇÕES DETALHADAS
+        function updateCostAnalysis() {
+            const foodTotal = getFoodTotal();
+            const beerTotal = getBeerTotal();
+            const grandTotal = foodTotal + beerTotal;
+            
+            const costsContent = document.getElementById('costs-content');
+            const costsContainer = document.getElementById('costs-breakdown');
+            
+            if (grandTotal > 0) {
+                const ifoodFee = grandTotal * 0.215; // 21,5%
+                const productionCosts = grandTotal * 0.30; // 30% - CMV + mão de obra + energia
+                const financialTaxes = grandTotal * 0.025; // 2,5% - PIX + cartões
+                const netProfit = grandTotal - ifoodFee - productionCosts - financialTaxes;
+
+                costsContainer.classList.remove('waiting-simulation');
+                costsContent.innerHTML = `
+                    <div class="cost-item">
+                        <span>Receita Bruta:</span>
+                        <span>R$ ${grandTotal.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Taxa iFood (21,5%):</span>
+                        <span>- R$ ${ifoodFee.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <div class="cost-item">
+                        <div class="cost-tooltip">
+                            <span>Custos de Produção (~30%):</span>
+                            <i class="fas fa-info-circle" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                            <div class="tooltip-content">CMV + Mão de obra + Energia + Gás</div>
+                        </div>
+                        <span>- R$ ${productionCosts.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <div class="cost-item">
+                        <div class="cost-tooltip">
+                            <span>Taxas Financeiras (~2,5%):</span>
+                            <i class="fas fa-info-circle" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                            <div class="tooltip-content">PIX + Cartão Débito + Crédito</div>
+                        </div>
+                        <span>- R$ ${financialTaxes.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <div class="cost-item">
+                        <span><strong>Lucro Líquido:</strong></span>
+                        <span>R$ ${netProfit.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                `;
+            } else {
+                // Placeholder quando não há simulação
+                costsContainer.classList.add('waiting-simulation');
+                costsContent.innerHTML = `
+                    <div class="cost-item placeholder-text">
+                        <span>Use o simulador para ver a análise detalhada dos custos!</span>
+                        <span></span>
+                    </div>
+                `;
+            }
+        }
+
+        // Análise Dinâmica SUPER MELHORADA
+        function updateDynamicAnalysis() {
+            const analysisContainer = document.getElementById('dynamic-analysis');
+            const contentDiv = document.getElementById('dynamic-content');
+            
+            if (totalItems === 0 && totalBeers === 0) {
+                analysisContainer.style.display = 'none';
+                return;
+            }
+            
+            analysisContainer.style.display = 'block';
+            
+            const foodSubtotal = Object.values(selectedItems).reduce((sum, item) => sum + (item.quantity * item.price), 0);
+            const foodTotal = foodSubtotal * 0.9; // Com desconto
+            const beerTotal = Object.values(selectedBeers).reduce((sum, item) => sum + (item.quantity * item.price), 0);
+            const grandTotal = foodTotal + beerTotal;
+            
+            let analysis = '';
+            
+            if (totalItems > 0) {
+                analysis += `<p>📊 Você selecionou <span class="highlight-value">${totalItems} petisco${totalItems > 1 ? 's' : ''}</span> por R$ ${foodSubtotal.toFixed(2).replace('.', ',')}</p>`;
+                analysis += `<p>🎯 Com desconto de 10%: <span class="highlight-value">R$ ${foodTotal.toFixed(2).replace('.', ',')}</span></p>`;
+            }
+            
+            if (totalBeers > 0) {
+                analysis += `<p>🍺 Você selecionou <span class="highlight-value">${totalBeers} cerveja${totalBeers > 1 ? 's' : ''}</span> por R$ ${beerTotal.toFixed(2).replace('.', ',')}</p>`;
+                
+                if (totalBeers >= MIN_BEERS) {
+                    analysis += `<p style="color: #90EE90;">✅ Requisito mínimo de cervejas atendido!</p>`;
+                } else {
+                    analysis += `<p style="color: #FFB6C1;">⚠️ Ainda faltam ${MIN_BEERS - totalBeers} cerveja${MIN_BEERS - totalBeers > 1 ? 's' : ''} para completar</p>`;
+                }
+            }
+            
+            if (grandTotal > 0 && totalBeers >= MIN_BEERS) {
+                // Cálculo da margem COM ESPECIFICAÇÕES CORRETAS
+                const ifoodFee = grandTotal * 0.215;
+                const productionCosts = grandTotal * 0.30; // 30% aproximado
+                const financialTaxes = grandTotal * 0.025; // 2,5% aproximado
+                const netProfit = grandTotal - ifoodFee - productionCosts - financialTaxes;
+                const margin = (netProfit / grandTotal) * 100;
+
+                analysis += `<p><strong>💰 Total do seu combo: <span class="highlight-value">R$ ${grandTotal.toFixed(2).replace('.', ',')}</span></strong></p>`;
+                analysis += `<p><strong>📈 Margem líquida: <span class="highlight-value">${margin.toFixed(1)}%</span></strong></p>`;
+
+                if (margin > 25) {
+                    analysis += `<p style="color: #90EE90;"><strong>🎉 Margem excelente - muito acima da média!</strong></p>`;
+                } else if (margin > 15) {
+                    analysis += `<p style="color: #90EE90;"><strong>✅ Margem muito boa - acima da média de mercado!</strong></p>`;
+                } else if (margin > 8) {
+                    analysis += `<p style="color: #FFD700;"><strong>⚖️ Margem dentro da faixa ideal para promoção!</strong></p>`;
+                } else {
+                    analysis += `<p style="color: #FFB6C1;"><strong>⚠️ Margem abaixo do ideal - considere ajustar preços</strong></p>`;
+                }
+            }
+            
+            contentDiv.innerHTML = analysis;
+        }
+
+        function showLimitWarning() {
+            document.getElementById('limit-warning').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('limit-warning').style.display = 'none';
+            }, 3000);
+        }
+
+        // INICIALIZAÇÃO COMPLETA
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Inicializando aplicação...');
+            
+            // Configurar event listeners
+            setupEventListeners();
+            
+            // Configurar navegação
+            window.addEventListener('hashchange', detectSlideChange);
+            detectSlideChange();
+            updateNavigation();
+            
+            // Configurar estados iniciais
+            updateCartSummary();
+            updateBeerCartSummary();
+            updateFinalSummary();
+            updateSimulatedTotal();
+            updateCostAnalysis();
+            
+            console.log('✅ Aplicação inicializada com sucesso!');
+        });
+    </script>
+</body>
+</html>
+
